@@ -1,12 +1,19 @@
-import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { MainPage, PokemonExtraInfo } from "./pages"
 import PokemonProvider from './contexts/PokemonProvider.jsx'
-import MainPage from "./components/MainPage"
+import './App.css'
 
 function App() {
   return (
     <PokemonProvider>
-      <MainPage/>
-    </PokemonProvider>  )
+      <BrowserRouter>
+        <Routes>
+          <Route index element={<MainPage />} />
+          <Route path="pokemon/:id" element={<PokemonExtraInfo />} />
+        </Routes>
+      </BrowserRouter>
+    </PokemonProvider >
+  )
 }
 
 export default App

@@ -1,27 +1,40 @@
 import { useEffect, useState } from "react"
 import { PokemonContext } from "./PokemonContext"
+import axios from "axios"
 
 const PokemonProvider = ({ children }) => {
     const [results, setResults] = useState([])
     const [fullData, setFullData] = useState([])
-    const baseUrl = "https://pokeapi.co/api/v2/pokemon"
+    const [pokemon, setPokemon] = useState([])
+    const [id, setId] = useState()
     const AllPokemons = []
+    const baseUrl = "https://pokeapi.co/api/v2/pokemon"
 
     useEffect(() => {
-        fetch(`${baseUrl}?limit=20`)
-            .then((response) => response.json())
-            .then((data) => setResults(
-                data.results.map((item, index) => {
-                    fetch(item.url)
-                        .then((response) => response.json())
-                        .then((pokemons) => AllPokemons.push(pokemons))
-                        setFullData(AllPokemons)
-                })
-            ))
+        axios.get(baseUrl)
+            .then((function (response) {
+                setResults(
+                    response.data.results.map((item) => {
+                        axios.get(item.url)
+                            .then(function (response) {
+                                AllPokemons.push(response)
+                                setFullData(AllPokemons)
+                            })
+                    })
+                )
+            })
+            )
     }, [])
 
+    useEffect(() => {
+        axios.get(`${baseUrl}/${id}`)
+            .then((function (response) {
+                setPokemon(response.data)
+            }))
+    }, [id])
+
     return (
-        <PokemonContext.Provider value={{ fullData }}>
+        <PokemonContext.Provider value={{ fullData, id, setId, pokemon }}>
             {children}
         </PokemonContext.Provider>
     )
